@@ -1,0 +1,26 @@
+version: "3.1"
+
+services:
+
+  logicaldoc:
+    image: logicaldoc/logicaldoc-ce
+    container_name: logicaldoc    
+    depends_on:
+      - mysql-ld
+    command: ["./wait-for-it.sh", "mysql-ld:3306", "-t", "30", "--", "/opt/logicaldoc/start-logicaldoc.sh", "run"]
+    ports:
+      - "8200:8080"
+    environment:
+      - LDOC_MEMORY=2000
+    restart: unless-stopped  
+
+  mysql-ld:
+    image: mysql:8.0
+    container_name: mysql-ld     
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=example
+      - MYSQL_DATABASE=logicaldoc
+      - MYSQL_USER=ldoc
+      - MYSQL_PASSWORD=changeme
+    restart: unless-stopped 
